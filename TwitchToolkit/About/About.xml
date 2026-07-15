@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ModMetaData>
-  <name>Twitch Toolkit</name>
-  <author>hodlhodl</author>
+  <name>TTK Rewritten</name>
+  <author>F_ckticiousKamo</author>
+  <description>
+    Kamo's rewrite of Hodl's Twitch Toolkit mod that modernizes the project, integrates patches directly into the mod framework, and integrates ToolkitUtils by sirrandoo functionalities in one cleaned up package.  
+  </description>
   <supportedVersions>
     <li>1.0</li>
     <li>1.1</li>
