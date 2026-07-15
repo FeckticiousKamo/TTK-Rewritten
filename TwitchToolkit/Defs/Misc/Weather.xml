@@ -12,7 +12,6 @@
     <accuracyMultiplier>0.8</accuracyMultiplier>
     <favorability>Neutral</favorability>
     <perceivePriority>1</perceivePriority>
-    <exposedThought>SoakingWet</exposedThought>
     <rainRate>0.1</rainRate>
     <moveSpeedMultiplier>0.9</moveSpeedMultiplier>
     <ambientSounds>
