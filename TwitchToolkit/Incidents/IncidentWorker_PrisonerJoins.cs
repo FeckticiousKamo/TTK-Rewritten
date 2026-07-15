@@ -31,13 +31,23 @@ namespace TwitchToolkit.Incidents
             Faction ofAncients = Faction.OfAncients;
             bool pawnMustBeCapableOfViolence = this.def.pawnMustBeCapableOfViolence;
             Gender? fixedGender = gender;
-            PawnGenerationRequest request = new PawnGenerationRequest(pawnKind, ofAncients, PawnGenerationContext.NonPlayer, map.Tile, false, false, false, false, true, false, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, null, null, fixedGender, null, null, null, null);
+            PawnGenerationRequest request = new PawnGenerationRequest(
+                kind: pawnKind, faction: ofAncients,
+                context: PawnGenerationContext.NonPlayer,
+                tile: map.Tile,
+                canGeneratePawnRelations: true,
+                mustBeCapableOfViolence: pawnMustBeCapableOfViolence,
+                colonistRelationChanceFactor: 1f,
+                allowGay: true,
+                allowFood: true,
+                allowAddictions: true,
+                fixedGender: fixedGender);
             List<Pawn> prisoners = new List<Pawn>();
             Pawn pawn = PawnGenerator.GeneratePawn(request);
             NameTriple oldName = pawn.Name as NameTriple;
             NameTriple newName = new NameTriple(oldName.First, viewer.username.CapitalizeFirst(), oldName.Last);
             pawn.Name = newName;
-            pawn.guest.SetGuestStatus(Faction.OfPlayer, true);
+            pawn.guest.SetGuestStatus(Faction.OfPlayer, GuestStatus.Prisoner);
             prisoners.Add(pawn);
             parms.raidArrivalMode = PawnsArrivalModeDefOf.CenterDrop;
             if (!parms.raidArrivalMode.Worker.TryResolveRaidSpawnCenter(parms))

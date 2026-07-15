@@ -58,7 +58,7 @@ namespace TwitchToolkit.Storytellers
 
             if ((float)GenDate.DaysPassed < this.Props.forceRaidEnemyBeforeDaysPassed)
             {
-                if (!IncidentDefOf.RaidEnemy.Worker.CanFireNow(parms, false))
+                if (!IncidentDefOf.RaidEnemy.Worker.CanFireNow(parms))
                 {
                     return null;
                 }
@@ -89,7 +89,7 @@ namespace TwitchToolkit.Storytellers
             {
                 if ((from def in base.UsableIncidentsInCategory(this.Props.IncidentCategory, parms)
                      where parms.points >= def.minThreatPoints && !defs.Contains(def)
-                     select def).TryChooseRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out IncidentDef def2))
+                     select def).TryChooseRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out IncidentDef def2))
                 {
                     defs.Add(def2);
                 }

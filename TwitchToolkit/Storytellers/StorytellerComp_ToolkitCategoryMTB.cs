@@ -54,7 +54,7 @@ namespace TwitchToolkit.Storytellers
             {
                 if ((from def in base.UsableIncidentsInCategory(this.Props.category, parms)
                      where parms.points >= def.minThreatPoints && !defs.Contains(def)
-                     select def).TryChooseRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out IncidentDef def2))
+                     select def).TryChooseRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out IncidentDef def2))
                 {
                     defs.Add(def2);
                 }

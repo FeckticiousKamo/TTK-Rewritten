@@ -55,7 +55,7 @@ namespace TwitchToolkit.VotingHelpers.VotingHelpers_Drops
     {
         public override bool IsPossible()
         {
-            worker = new IncidentWorker_TransportPodCrash();
+            worker = new IncidentWorker_ResourcePodCrash();
             worker.def = IncidentDefOf.ShipChunkDrop;
 
             parms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.Misc, target);

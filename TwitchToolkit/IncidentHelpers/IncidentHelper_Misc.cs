@@ -163,7 +163,7 @@ namespace TwitchToolkit.IncidentHelpers.Misc
     {
         public override bool IsPossible()
         {
-            worker = new RimWorld.IncidentWorker_TransportPodCrash();
+            worker = new RimWorld.IncidentWorker_ResourcePodCrash();
             worker.def = IncidentDefOf.ShipChunkDrop;
 
             Map map = Helper.AnyPlayerMap;
@@ -749,7 +749,7 @@ namespace TwitchToolkit.IncidentHelpers.Misc
                 return false;
             }
 
-            if (!RCellFinder.TryFindGatheringSpot(pawn, GatheringDefOf.Party, out intVec))
+            if (!RCellFinder.TryFindGatheringSpot(pawn, GatheringDefOf.Party, true, out intVec))
             {
                 return false;
             }

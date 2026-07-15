@@ -294,10 +294,10 @@ namespace TwitchToolkit
             
             Listing_Standard optionsListing = new Listing_Standard();
 
-            optionsListing.Begin(optionsRect);
-            optionsListing.BeginScrollView(scrollViewer, ref scrollVector2, ref viewRect);
+            Widgets.BeginScrollView(scrollViewer, ref scrollVector2, viewRect, true);
+            optionsListing.Begin(viewRect);
 
-            switch(currentTab)
+            switch (currentTab)
             {
                 case SettingsTab.Coins:
                     Settings_Coins.DoWindowContents(viewRect, optionsListing);
@@ -337,8 +337,8 @@ namespace TwitchToolkit
                     break;
             }
 
-            optionsListing.EndScrollView(ref viewRect);
-            optionsListing.End();         
+            optionsListing.End();
+            Widgets.EndScrollView();
         }
 
         public override void ExposeData()

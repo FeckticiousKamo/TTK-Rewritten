@@ -46,7 +46,7 @@ namespace TwitchToolkit.Incidents
                   where x.Worker.CanUseWith(parms)
                   select x).TryRandomElementByWeight((PawnsArrivalModeDef x) => x.Worker.GetSelectionWeight(parms), out parms.raidArrivalMode))
             {
-                Log.Error("Could not resolve arrival mode for raid. Defaulting to EdgeWalkIn. parms=" + parms, false);
+                Log.Error("Could not resolve arrival mode for raid. Defaulting to EdgeWalkIn. parms=" + parms);
                 parms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
             }
         }
@@ -67,7 +67,7 @@ namespace TwitchToolkit.Incidents
                 return false;
             }
             parms.points = IncidentWorker_Raid.AdjustedRaidPoints(parms.points, parms.raidArrivalMode, parms.raidStrategy, parms.faction, combat);
-            PawnGroupMakerParms defaultPawnGroupMakerParms = IncidentParmsUtility.GetDefaultPawnGroupMakerParms(combat, parms, false);
+            PawnGroupMakerParms defaultPawnGroupMakerParms = IncidentParmsUtility.GetDefaultPawnGroupMakerParms(combat, parms);
             List<Pawn> list = PawnGroupMakerUtility.GeneratePawns(defaultPawnGroupMakerParms, true).ToList<Pawn>();
             List<string> viewernames = Viewers.ParseViewersFromJsonAndFindActiveViewers();
             if (list.Count > 0 && viewernames != null)
@@ -94,7 +94,7 @@ namespace TwitchToolkit.Incidents
             }
             if (list.Count == 0)
             {
-                Log.Error("Got no pawns spawning raid from parms " + parms, false);
+                Log.Error("Got no pawns spawning raid from parms " + parms);
                 return false;
             }
             parms.raidArrivalMode.Worker.Arrive(list, parms);
@@ -150,119 +150,6 @@ namespace TwitchToolkit.Incidents
             }
             points = Mathf.Max(points, raidStrategy.Worker.MinimumPoints(faction, groupKind) * 1.05f);
             return points;
-        }
-
-        public void DoTable_RaidFactionSampled()
-        {
-            int ticksGame = Find.TickManager.TicksGame;
-            Find.TickManager.DebugSetTicksGame(36000000);
-            List<TableDataGetter<Faction>> list = new List<TableDataGetter<Faction>>();
-            list.Add(new TableDataGetter<Faction>("name", (Faction f) => f.Name));
-            foreach (float points in DebugActionsUtility.PointsOptions(false))
-            {
-                Dictionary<Faction, int> factionCount = new Dictionary<Faction, int>();
-                foreach (Faction current in Find.FactionManager.AllFactions)
-                {
-                    factionCount.Add(current, 0);
-                }
-                for (int i = 0; i < 500; i++)
-                {
-                    IncidentParms incidentParms = new IncidentParms();
-                    incidentParms.target = Find.CurrentMap;
-                    incidentParms.points = points;
-                    if (this.TryResolveRaidFaction(incidentParms))
-                    {
-                        Dictionary<Faction, int> factionCount2;
-                        Faction faction;
-                        (factionCount2 = factionCount)[faction = incidentParms.faction] = factionCount2[faction] + 1;
-                    }
-                }
-                list.Add(new TableDataGetter<Faction>(points.ToString("F0"), delegate (Faction str)
-                {
-                    int num = factionCount[str];
-                    return ((float)num / 500f).ToStringPercent();
-                }));
-            }
-            Find.TickManager.DebugSetTicksGame(ticksGame);
-            DebugTables.MakeTablesDialog<Faction>(Find.FactionManager.AllFactions, list.ToArray());
-        }
-
-        public void DoTable_RaidStrategySampled(Faction fac)
-        {
-            int ticksGame = Find.TickManager.TicksGame;
-            Find.TickManager.DebugSetTicksGame(36000000);
-            List<TableDataGetter<RaidStrategyDef>> list = new List<TableDataGetter<RaidStrategyDef>>();
-            list.Add(new TableDataGetter<RaidStrategyDef>("defName", (RaidStrategyDef d) => d.defName));
-            foreach (float points in DebugActionsUtility.PointsOptions(false))
-            {
-                Dictionary<RaidStrategyDef, int> strats = new Dictionary<RaidStrategyDef, int>();
-                foreach (RaidStrategyDef current in DefDatabase<RaidStrategyDef>.AllDefs)
-                {
-                    strats.Add(current, 0);
-                }
-                for (int i = 0; i < 500; i++)
-                {
-                    IncidentParms incidentParms = new IncidentParms();
-                    incidentParms.target = Find.CurrentMap;
-                    incidentParms.points = points;
-                    incidentParms.faction = fac;
-                    if (this.TryResolveRaidFaction(incidentParms))
-                    {
-                        this.ResolveRaidStrategy(incidentParms, PawnGroupKindDefOf.Combat);
-                        if (incidentParms.raidStrategy != null)
-                        {
-                            Dictionary<RaidStrategyDef, int> strats2;
-                            RaidStrategyDef raidStrategy;
-                            (strats2 = strats)[raidStrategy = incidentParms.raidStrategy] = strats2[raidStrategy] + 1;
-                        }
-                    }
-                }
-                list.Add(new TableDataGetter<RaidStrategyDef>(points.ToString("F0"), delegate (RaidStrategyDef str)
-                {
-                    int num = strats[str];
-                    return ((float)num / 500f).ToStringPercent();
-                }));
-            }
-            Find.TickManager.DebugSetTicksGame(ticksGame);
-            DebugTables.MakeTablesDialog<RaidStrategyDef>(DefDatabase<RaidStrategyDef>.AllDefs, list.ToArray());
-        }
-
-        public void DoTable_RaidArrivalModeSampled(Faction fac)
-        {
-            int ticksGame = Find.TickManager.TicksGame;
-            Find.TickManager.DebugSetTicksGame(36000000);
-            List<TableDataGetter<PawnsArrivalModeDef>> list = new List<TableDataGetter<PawnsArrivalModeDef>>();
-            list.Add(new TableDataGetter<PawnsArrivalModeDef>("mode", (PawnsArrivalModeDef f) => f.defName));
-            foreach (float points in DebugActionsUtility.PointsOptions(false))
-            {
-                Dictionary<PawnsArrivalModeDef, int> modeCount = new Dictionary<PawnsArrivalModeDef, int>();
-                foreach (PawnsArrivalModeDef current in DefDatabase<PawnsArrivalModeDef>.AllDefs)
-                {
-                    modeCount.Add(current, 0);
-                }
-                for (int i = 0; i < 500; i++)
-                {
-                    IncidentParms incidentParms = new IncidentParms();
-                    incidentParms.target = Find.CurrentMap;
-                    incidentParms.points = points;
-                    incidentParms.faction = fac;
-                    if (this.TryResolveRaidFaction(incidentParms))
-                    {
-                        this.ResolveRaidStrategy(incidentParms, PawnGroupKindDefOf.Combat);
-                        this.ResolveRaidArriveMode(incidentParms);
-                        Dictionary<PawnsArrivalModeDef, int> modeCount2;
-                        PawnsArrivalModeDef raidArrivalMode;
-                        (modeCount2 = modeCount)[raidArrivalMode = incidentParms.raidArrivalMode] = modeCount2[raidArrivalMode] + 1;
-                    }
-                }
-                list.Add(new TableDataGetter<PawnsArrivalModeDef>(points.ToString("F0"), delegate (PawnsArrivalModeDef str)
-                {
-                    int num = modeCount[str];
-                    return ((float)num / 500f).ToStringPercent();
-                }));
-            }
-            Find.TickManager.DebugSetTicksGame(ticksGame);
-            DebugTables.MakeTablesDialog<PawnsArrivalModeDef>(DefDatabase<PawnsArrivalModeDef>.AllDefs, list.ToArray());
         }
 
         public bool disableEvent = false;

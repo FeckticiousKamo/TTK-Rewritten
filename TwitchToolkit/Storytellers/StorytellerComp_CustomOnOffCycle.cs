@@ -54,7 +54,7 @@ namespace TwitchToolkit
             IncidentDef def2;
             if ((float)GenDate.DaysPassed < this.Props.forceRaidEnemyBeforeDaysPassed)
             {
-                if (!IncidentDefOf.RaidEnemy.Worker.CanFireNow(parms, false))
+                if (!IncidentDefOf.RaidEnemy.Worker.CanFireNow(parms))
                 {
                     return null;
                 }
@@ -62,7 +62,7 @@ namespace TwitchToolkit
             }
             else if (this.Props.incident != null)
             {
-                if (!this.Props.incident.Worker.CanFireNow(parms, false))
+                if (!this.Props.incident.Worker.CanFireNow(parms))
                 {
                     return null;
                 }
@@ -74,7 +74,7 @@ namespace TwitchToolkit
                           where parms.points >= def.minThreatPoints
                           select def;
                 Helper.Log($"Trying OFC Category: ${this.Props.IncidentCategory}");
-                if (options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out def2))
+                if (options.TryRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out def2))
                 {
                     if (options.Count() > 1)
                     {
@@ -82,7 +82,7 @@ namespace TwitchToolkit
                         pickedoptions.Add(def2);
                         for (int x = 0; x < ToolkitSettings.VoteOptions - 1 && x < options.Count(); x++)
                         {
-                            options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out IncidentDef picked);
+                            options.TryRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out IncidentDef picked);
                             if (picked != null)
                             {
                                 options = options.Where(k => k != picked);

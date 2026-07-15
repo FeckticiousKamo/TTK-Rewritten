@@ -12,11 +12,11 @@ namespace TwitchToolkit.Incidents
             Quote = quote;
         }
 
-        protected new void SendStandardLetter()
+        protected void SendStandardLetter()
         {
             if (this.def.letterLabel.NullOrEmpty() || this.def.letterText.NullOrEmpty())
             {
-                Log.Error("Sending standard incident letter with no label or text.", false);
+                Log.Error("Sending standard incident letter with no label or text.");
             }
 
             var text = this.def.letterText;
@@ -26,14 +26,14 @@ namespace TwitchToolkit.Incidents
                 text += Quote;
             }
 
-            Find.LetterStack.ReceiveLetter(this.def.letterLabel, text, this.def.letterDef, null);
+            Find.LetterStack.ReceiveLetter(this.def.letterLabel, text, this.def.letterDef, (string)null);
         }
 
-        protected new void SendStandardLetter(LookTargets lookTargets, Faction relatedFaction = null, params string[] textArgs)
+        protected void SendStandardLetter(LookTargets lookTargets, Faction relatedFaction = null, params string[] textArgs)
         {
             if (this.def.letterLabel.NullOrEmpty() || this.def.letterText.NullOrEmpty())
             {
-                Log.Error("Sending standard incident letter with no label or text.", false);
+                Log.Error("Sending standard incident letter with no label or text.");
             }
 
             var text = string.Format(this.def.letterText, textArgs).CapitalizeFirst();

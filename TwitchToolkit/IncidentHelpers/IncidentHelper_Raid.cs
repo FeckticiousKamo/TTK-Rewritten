@@ -363,7 +363,7 @@ namespace TwitchToolkit.IncidentHelpers.Raids
             worker = new IncidentWorker_Infestation();
             worker.def = IncidentDef.Named("Infestation");
 
-            bool canFire = worker.CanFireNow(parms, true);
+            bool canFire = worker.CanFireNow(parms);
 
             if (!canFire)
             {
@@ -427,7 +427,7 @@ namespace TwitchToolkit.IncidentHelpers.Raids
             parms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatSmall, target);
             parms.points = IncidentHelper_PointsHelper.RollProportionalGamePoints(storeIncident, pointsWager, parms.points);
 
-            worker = new IncidentWorker_ManhunterPack();
+            worker = new IncidentWorker_Ambush_ManhunterPack();
             worker.def = IncidentDefOf.RaidEnemy;
             
             return worker.CanFireNow(parms);

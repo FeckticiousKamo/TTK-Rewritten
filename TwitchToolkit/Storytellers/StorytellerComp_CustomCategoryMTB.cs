@@ -34,9 +34,10 @@ namespace TwitchToolkit
             {
 
                 IncidentDef selectedDef;
-                options = base.UsableIncidentsInCategory(this.Props.category, target);
+                IncidentParms parms = base.GenerateParms(this.Props.category, target);
+                options = base.UsableIncidentsInCategory(this.Props.category, parms);
                 Helper.Log("Trying to create events");
-                if (options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out selectedDef))
+                if (options.TryRandomElementByWeight ((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out selectedDef))
                 {
                     if (options.Count() > ToolkitSettings.VoteOptions)
                     {
@@ -44,7 +45,7 @@ namespace TwitchToolkit
                         pickedoptions.Add(selectedDef);
                         for (int x = 0; x < ToolkitSettings.VoteOptions - 1 && x < options.Count(); x++)
                         {
-                            options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out IncidentDef picked);
+                            options.TryRandomElementByWeight ((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out IncidentDef picked);
                             if (picked != null)
                             {
                                 options = options.Where(k => k != picked);

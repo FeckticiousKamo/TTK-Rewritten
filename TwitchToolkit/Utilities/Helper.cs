@@ -211,7 +211,7 @@ namespace TwitchToolkit
 
         public static bool GetRandomVec3(ThingDef thing, Map map, out IntVec3 vec, int contract = 0)
         {
-            return CellFinderLoose.TryFindSkyfallerCell(thing, map, out vec, contract, map.Center, 99999, true, false, false, true, true, false, null);
+            return CellFinderLoose.TryFindSkyfallerCell(thing, map, TerrainAffordanceDefOf.Walkable, out vec, contract, map.Center, 99999, true, false, false, true, true, false, null);
         }
 
         #region Weather
@@ -285,7 +285,8 @@ namespace TwitchToolkit
             incident.def.category.tale = null;
             return incident.CanFireNow(new IncidentParms
             {
-                target = Helper.AnyPlayerMap
+                target = Helper.AnyPlayerMap,
+                forced = true
             });
         }
 
@@ -340,8 +341,9 @@ namespace TwitchToolkit
             incident.def.category.tale = null;
             return incident.CanFireNow(new IncidentParms
             {
-                target = Helper.AnyPlayerMap
-            }, true);
+                target = Helper.AnyPlayerMap,
+                forced = true
+            });
         }
 
         public static void AnimalTame(string quote = null)
@@ -419,19 +421,17 @@ namespace TwitchToolkit
         static bool TryFindMeteoriteCell(out IntVec3 cell, Map map)
         {
             int maxMineables = ThingSetMaker_Meteorite.MineablesCountRange.max;
-            return CellFinderLoose.TryFindSkyfallerCell(ThingDefOf.MeteoriteIncoming, map, out cell, 10, default(IntVec3), -1, true, false, false, false, true, true, delegate (IntVec3 x)
+            return CellFinderLoose.TryFindSkyfallerCell(ThingDefOf.MeteoriteIncoming, map, TerrainAffordanceDefOf.Walkable, out cell, 10, default(IntVec3), -1, true, false, false, false, true, true, delegate (IntVec3 x)
             {
                 int num = Mathf.CeilToInt(Mathf.Sqrt(maxMineables)) + 2;
                 var cellRect = CellRect.CenteredOn(x, num, num);
                 int num2 = 0;
-                var iterator = cellRect.GetIterator();
-                while (!iterator.Done())
+                foreach (IntVec3 current in cellRect)
                 {
-                    if (iterator.Current.InBounds(map) && iterator.Current.Standable(map))
+                    if (current.InBounds(map) && current.Standable(map))
                     {
                         num2++;
                     }
-                    iterator.MoveNext();
                 }
                 return num2 >= maxMineables;
             });
@@ -465,7 +465,7 @@ namespace TwitchToolkit
             for (int i = 0; i < count; i++)
             {
                 IntVec3 loc;
-                if (!GetRandomVec3(ThingDefOf.Tornado, map, out loc, 30))
+                if (!GetRandomVec3(ThingDef.Named("Tornado"), map, out loc, 30))
                 {
                     return;
                 }

@@ -95,12 +95,12 @@ namespace TwitchToolkit
                     IncidentCategoryDef category = this.ChooseRandomCategory(incidentTarget, triedCategories);
                     Helper.Log($"Trying Category {category}");
                     parms = this.GenerateParms(category, incidentTarget);
-                    options = from d in base.UsableIncidentsInCategory(category, incidentTarget)
-                              where !d.NeedsParmsPoints || parms.points >= d.minThreatPoints
+                    options = from d in base.UsableIncidentsInCategory(category, parms)
+                              where !d.pointsScaleable || parms.points >= d.minThreatPoints
                               select d;
 
 
-                    if (options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out incDef))
+                    if (options.TryRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out incDef))
                     {
                         break;
                     }
@@ -120,7 +120,7 @@ namespace TwitchToolkit
                     pickedoptions.Add(incDef);
                     for (int x = 0; x < ToolkitSettings.VoteOptions - 1 && x < options.Count(); x++)
                     {
-                        options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out IncidentDef picked);
+                        options.TryRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out IncidentDef picked);
                         if (picked != null)
                         {
                             options = options.Where(k => k != picked);
@@ -194,12 +194,12 @@ namespace TwitchToolkit
                         IncidentCategoryDef category = this.ChooseRandomCategory(target, triedCategories);
                         Helper.Log($"Trying Category{category}");
                         parms = this.GenerateParms(category, target);
-                        options = from d in base.UsableIncidentsInCategory(category, target)
-                                    where !d.NeedsParmsPoints || parms.points >= d.minThreatPoints
+                        options = from d in base.UsableIncidentsInCategory(category, parms)
+                                    where !d.pointsScaleable || parms.points >= d.minThreatPoints
                                     select d;
 
 
-                        if (options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out incDef))
+                        if (options.TryRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out incDef))
                         {
 
                         }
@@ -219,7 +219,7 @@ namespace TwitchToolkit
                         pickedoptions.Add(incDef);
                         for (int x = 0; x < ToolkitSettings.VoteOptions - 1 && x < options.Count(); x++)
                         {
-                            options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out IncidentDef picked);
+                            options.TryRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out IncidentDef picked);
                             if (picked != null)
                             {
                                 options = options.Where(k => k != picked);

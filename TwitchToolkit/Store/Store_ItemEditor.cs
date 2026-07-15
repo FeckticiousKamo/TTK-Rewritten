@@ -123,7 +123,7 @@ namespace TwitchToolkit.Store
                 if (search == null || search.Count() < 1)
                 {
                     finalCount = finalCount - 1;
-                    Log.Message($"Skipping Item: {allItems[i].defname} i: {i} finalCount: {finalCount}", true);
+                    Log.Message($"Skipping Item: {allItems[i].defname} i: {i} finalCount: {finalCount}");
                     continue;
                 }
                 else

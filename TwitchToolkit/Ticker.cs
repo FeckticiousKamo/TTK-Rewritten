@@ -89,7 +89,7 @@ namespace TwitchToolkit
         private int _lastMinute = -1;
         private int _lastCoinReward = -1;
 
-        public override void Tick()
+        protected override void Tick()
         {
             try
             {

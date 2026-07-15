@@ -103,7 +103,7 @@ namespace TwitchToolkit.VotingHelpers.VotingHelpers_Colonists
             }
 
             IntVec3 intVec;
-            if (!RCellFinder.TryFindGatheringSpot(pawn, GatheringDefOf.Party, out intVec))
+            if (!RCellFinder.TryFindGatheringSpot(pawn, GatheringDefOf.Party, true, out intVec))
             {
                 return false;
             }
@@ -113,7 +113,7 @@ namespace TwitchToolkit.VotingHelpers.VotingHelpers_Colonists
 
         public override void TryExecute()
         {
-            if (!RCellFinder.TryFindGatheringSpot(pawn, GatheringDefOf.Party, out IntVec3 intVec))
+            if (!RCellFinder.TryFindGatheringSpot(pawn, GatheringDefOf.Party, true, out IntVec3 intVec))
             {
                 return;
             }

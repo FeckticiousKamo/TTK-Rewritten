@@ -48,7 +48,7 @@ namespace TwitchToolkit.IncidentHelpers.Special
 					}
 				}
                 pawn.ClearAllReservations();
-                ResurrectionUtility.ResurrectWithSideEffects(pawn);
+                ResurrectionUtility.TryResurrectWithSideEffects(pawn);
                 PawnTracker.pawnsToRevive.Remove(pawn);
                 Find.LetterStack.ReceiveLetter("Pawn Revived", $"{pawn.Name} has been revived but is experiencing some side effects.", LetterDefOf.PositiveEvent, pawn);
             }
@@ -88,7 +88,17 @@ namespace TwitchToolkit.IncidentHelpers.Special
             PawnKindDef pawnKind = PawnKindDefOf.Colonist;
 			Faction ofPlayer = Faction.OfPlayer;
 			bool pawnMustBeCapableOfViolence = true;
-			PawnGenerationRequest request = new PawnGenerationRequest(pawnKind, ofPlayer, PawnGenerationContext.NonPlayer, map.Tile, false, false, false, false, true, pawnMustBeCapableOfViolence, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, null, null, null, null, null, null, null);
+            PawnGenerationRequest request = new PawnGenerationRequest(
+                kind: pawnKind,
+                faction: ofPlayer,
+                context: PawnGenerationContext.NonPlayer,
+                tile: map.Tile,
+                canGeneratePawnRelations: true,
+                mustBeCapableOfViolence: pawnMustBeCapableOfViolence,
+                colonistRelationChanceFactor: 1f,
+                allowGay: true,
+                allowFood: true,
+                allowAddictions: true);
             Pawn pawn = PawnGenerator.GeneratePawn(request);
             NameTriple old = pawn.Name as NameTriple;
             pawn.Name = new NameTriple(old.First, Viewer.username, old.Last);
@@ -159,7 +169,9 @@ namespace TwitchToolkit.IncidentHelpers.Special
 
             float points = IncidentHelper_PointsHelper.RollProportionalGamePoints(storeIncident, pointsWager, StorytellerUtility.DefaultThreatPointsNow(target));
             pawnKind = allAnimals[0];
-            int num = ManhunterPackIncidentUtility.GetAnimalsCount(pawnKind, points);
+            int num = System.Math.Max(
+                1,
+                (int)GenMath.RoundRandom(points / pawnKind.combatPower));
             worker = new IncidentWorker_SpecificAnimalsWanderIn(null, pawnKind, true, num, false, true);
 
             worker.def = IncidentDef.Named("FarmAnimalsWanderIn");
@@ -327,12 +339,12 @@ namespace TwitchToolkit.IncidentHelpers.Special
                 pawn.gender = Gender.Female;
             }
 
-            pawn.story.hairColor = PawnHairColors.RandomHairColor(pawn.story.SkinColor, pawn.ageTracker.AgeBiologicalYears);
-            pawn.story.hairDef = PawnHairChooser.RandomHairDefFor(pawn, FactionDefOf.PlayerColony);
+            pawn.story.HairColor = PawnHairColors.RandomHairColor(pawn, pawn.story.SkinColor, pawn.ageTracker.AgeBiologicalYears);
+            pawn.story.hairDef = PawnStyleItemChooser.RandomHairFor(pawn);
 
-            if (pawn.story.adulthood != null)
+            if (pawn.story.Adulthood != null)
             {
-                pawn.story.bodyType = pawn.story.adulthood.BodyTypeFor(pawn.gender);
+                pawn.story.bodyType = pawn.story.Adulthood.BodyTypeFor(pawn.gender);
             }
             else if (Rand.Value < 0.5f)
             {

@@ -29,7 +29,7 @@ namespace TwitchToolkit.Utilities
 
             Find.LetterStack.ReceiveLetter("Hodl is here", text, LetterDefOf.PositiveEvent);
 
-            SoundDefOf.OrbitalBeam.PlayOneShotOnCamera(map);
+            SoundDefOf.OrbitalStrike_Ordered.PlayOneShotOnCamera(map);
         }
     }
 }

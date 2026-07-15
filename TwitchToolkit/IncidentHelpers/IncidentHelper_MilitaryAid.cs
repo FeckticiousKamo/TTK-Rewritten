@@ -20,7 +20,7 @@ namespace TwitchToolkit.IncidentHelpers.MilitaryAid
         {
             Map currentMap = Find.CurrentMap;
 
-            IncidentParms incidentParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.AllyAssistance, currentMap);
+            IncidentParms incidentParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.Special, currentMap);
             incidentParms.forced = true;
             incidentParms.target = currentMap;
             incidentParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;

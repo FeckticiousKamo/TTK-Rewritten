@@ -157,7 +157,7 @@ namespace TwitchToolkit.VotingHelpers.VotingHelpers_Animals
     {
         public override bool IsPossible()
         {
-            worker = new IncidentWorker_ManhunterPack();
+            worker = new IncidentWorker_Ambush_ManhunterPack();
             worker.def = IncidentDefOf.RaidEnemy;
 
             parms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, target);

@@ -19,30 +19,34 @@ namespace TwitchToolkit.Incidents
 
         protected override bool TryResolveRaidFaction(IncidentParms parms)
         {
-            Map map = (Map)parms.target;
             if (parms.faction != null)
             {
                 return true;
             }
-            if (!CandidateFactions(map, true).Any<Faction>())
+
+            if (!CandidateFactions(parms, desperate: true).Any())
             {
                 return false;
             }
 
-            parms.faction = CandidateFactions(map, true).RandomElementByWeight((Faction fac) => (float)fac.PlayerGoodwill + 120.000008f);
+            parms.faction = CandidateFactions(parms, desperate: true)
+                .RandomElementByWeight(
+                    fac => (float)fac.PlayerGoodwill + 120.000008f
+                );
+
             return true;
         }
 
-        protected new IEnumerable<Faction> CandidateFactions(Map map, bool desperate = false)
+        public override bool FactionCanBeGroupSource(
+            Faction f,
+            IncidentParms parms,
+            bool desperate = true
+        )
         {
-            return from f in Find.FactionManager.AllFactions
-                   where FactionCanBeGroupSource(f, map, desperate)
-                   select f;
-        }
-
-        protected override bool FactionCanBeGroupSource(Faction f, Map map, bool desperate = true)
-        {
-            return f.def != FactionDefOf.PlayerColony && f.def != FactionDefOf.PlayerTribe && !f.def.hidden && f.PlayerRelationKind >= FactionRelationKind.Neutral;
+            return f.def != FactionDefOf.PlayerColony
+                && f.def != FactionDefOf.PlayerTribe
+                && !f.def.hidden
+                && f.PlayerRelationKind >= FactionRelationKind.Neutral;
         }
 
         protected override bool TryExecuteWorker(IncidentParms parms)
@@ -64,10 +68,10 @@ namespace TwitchToolkit.Incidents
             List<Pawn> list = parms.raidStrategy.Worker.SpawnThreats(parms);
             if (list == null)
             {
-                list = PawnGroupMakerUtility.GeneratePawns(IncidentParmsUtility.GetDefaultPawnGroupMakerParms(combat, parms, false), true).ToList<Pawn>();
+                list = PawnGroupMakerUtility.GeneratePawns(IncidentParmsUtility.GetDefaultPawnGroupMakerParms(combat, parms), true).ToList<Pawn>();
                 if (list.Count == 0)
                 {
-                    Log.Error("Got no pawns spawning raid from parms " + parms, false);
+                    Log.Error("Got no pawns spawning raid from parms " + parms);
                     return false;
                 }
                 parms.raidArrivalMode.Worker.Arrive(list, parms);
@@ -113,7 +117,7 @@ namespace TwitchToolkit.Incidents
             {
                 for (int j = 0; j < list.Count; j++)
                 {
-                    if (list[j].apparel.WornApparel.Any((Apparel ap) => ap is ShieldBelt))
+                    if (list[j].apparel.WornApparel.Any((Apparel ap) => ap.TryGetComp < CompShield>() != null))
                     {
                         LessonAutoActivator.TeachOpportunity(ConceptDefOf.ShieldBelts, OpportunityType.Critical);
                         break;

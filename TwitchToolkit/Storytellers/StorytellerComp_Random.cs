@@ -30,13 +30,13 @@ namespace TwitchToolkit.Storytellers
                     incidentDefs = new List<IncidentDef>();
                     IncidentCategoryDef category = ChooseRandomCategory(target, triedCategories);
                     IncidentParms parms = this.GenerateParms(category, target);
-                    IEnumerable<IncidentDef> options = from d in base.UsableIncidentsInCategory(category, target)
-                                                       where d.Worker.CanFireNow(parms) && (!d.NeedsParmsPoints || parms.points >= d.minThreatPoints)
+                    IEnumerable<IncidentDef> options = from d in base.UsableIncidentsInCategory(category, parms)
+                                                       where d.Worker.CanFireNow(parms) && (!d.pointsScaleable || parms.points >= d.minThreatPoints)
                                                        select d;
 
                     for (int i = 0; options.Count() > 0 && incidentDefs.Count < ToolkitSettings.VoteOptions && i < 10; i++)
                     {
-                        if (!options.TryRandomElementByWeight(new Func<IncidentDef, float>(base.IncidentChanceFinal), out IncidentDef incDef))
+                        if (!options.TryRandomElementByWeight((IncidentDef incident) => base.IncidentChanceFinal(incident, parms.target), out IncidentDef incDef))
                         {
                             triedCategories.Add(category);
                             break;

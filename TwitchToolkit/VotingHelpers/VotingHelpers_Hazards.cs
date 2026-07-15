@@ -94,7 +94,7 @@ namespace TwitchToolkit.VotingHelpers.VotingHelpers_Hazards
 
         public override void TryExecute()
         {
-            RimWorld.Tornado tornado = (RimWorld.Tornado)GenSpawn.Spawn(ThingDefOf.Tornado, loc, map);
+            RimWorld.Tornado tornado = (RimWorld.Tornado)GenSpawn.Spawn(ThingDef.Named("Tornado"), loc, map);
 
             string text = "A  mobile, destructive vortex of violently rotating winds have appeard. Seek safe shelter!";
 
@@ -163,7 +163,7 @@ namespace TwitchToolkit.VotingHelpers.VotingHelpers_Hazards
             while (CellFinder.TryFindRandomCellInsideWith(cellRect, (IntVec3 x) => this.CanSpawnTornadoAt(x, map), out loc) && count < 3)
             {
                 count++;
-                RimWorld.Tornado tornado = (RimWorld.Tornado)GenSpawn.Spawn(ThingDefOf.Tornado, loc, map);
+                RimWorld.Tornado tornado = (RimWorld.Tornado)GenSpawn.Spawn(ThingDef.Named("Tornado"), loc, map);
                 tornados.Add(tornado);
             }
 

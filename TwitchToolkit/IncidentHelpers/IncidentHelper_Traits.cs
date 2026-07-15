@@ -65,24 +65,31 @@ namespace TwitchToolkit.IncidentHelpers.Traits
             {
                 num = Rand.ByCurve(LevelRandomCurve);
             }
-            foreach (Backstory backstory in from bs in pawn.story.AllBackstories
+            foreach (BackstoryDef backstory in from bs in pawn.story.AllBackstories
                                             where bs != null
                                             select bs)
             {
-                foreach (KeyValuePair<SkillDef, int> keyValuePair in backstory.skillGainsResolved)
+                foreach (SkillGain gain in backstory.skillGains)
                 {
-                    if (keyValuePair.Key == sk)
+                    if (gain.skill == sk)
                     {
-                        num += (float)keyValuePair.Value * Rand.Range(1f, 1.4f);
+                        num += gain.amount * Rand.Range(1f, 1.4f);
                     }
                 }
             }
             for (int i = 0; i < pawn.story.traits.allTraits.Count; i++)
             {
-                int num2 = 0;
-                if (pawn.story.traits.allTraits[i].CurrentData.skillGains.TryGetValue(sk, out num2))
+                List<SkillGain> skillGains =
+                    pawn.story.traits.allTraits[i].CurrentData.skillGains;
+
+                if (skillGains != null)
                 {
-                    num += (float)num2;
+                    int skillIndex = skillGains.FindIndex(gain => gain.skill == sk);
+
+                    if (skillIndex >= 0)
+                    {
+                        num += skillGains[skillIndex].amount;
+                    }
                 }
             }
             float num3 = Rand.Range(1f, AgeSkillMaxFactorCurve.Evaluate((float)pawn.ageTracker.AgeBiologicalYears));
@@ -243,10 +250,10 @@ namespace TwitchToolkit.IncidentHelpers.Traits
             {
                 if (traitDegreeData.skillGains != null)
                 {
-                    foreach (KeyValuePair<SkillDef, int> pair in traitDegreeData.skillGains)
+                    foreach (SkillGain gain in traitDegreeData.skillGains)
                     {
-                        SkillRecord skill = pawn.skills.GetSkill(pair.Key);
-                        int num = TraitHelpers.FinalLevelOfSkill(pawn, pair.Key);
+                        SkillRecord skill = pawn.skills.GetSkill(gain.skill);
+                        int num = TraitHelpers.FinalLevelOfSkill(pawn, gain.skill);
                         skill.Level = num;
                     }
                 }
@@ -325,10 +332,10 @@ namespace TwitchToolkit.IncidentHelpers.Traits
                 {
                     if (traitDegreeData.skillGains != null)
                     {
-                        foreach (KeyValuePair<SkillDef, int> pair in traitDegreeData.skillGains)
+                        foreach (SkillGain gain in traitDegreeData.skillGains)
                         {
-                            SkillRecord skill = pawn.skills.GetSkill(pair.Key);
-                            skill.Level -= pair.Value;
+                            SkillRecord skill = pawn.skills.GetSkill(gain.skill);
+                            skill.Level -= gain.amount;
                         }
                     }
                 }
